@@ -3,31 +3,28 @@
 
 #include <QDialog>
 #include <QObject>
+#include <QTimer>
 #include <QGraphicsPixmapItem>
-#include <health.h>
-#include <cannon.h>
-#include <townhall.h>
-#include<QTimer>
+#include "townhall.h"
+#include "workers.h"
+
+
 class Troop : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
+
+    QTimer* timer = new QTimer();
+QTimer* timer5 = new QTimer();
+
 public:
     Troop();
 
-    void collide();
-protected:
 
-
-private:
-    int collisionCount;
-    int collisionTimerCount;
-    Health* health;
-    Cannon* cannon;
-   // int upgradeCost;
-    Townhall* castle;
-    QTimer* collisionTimer;
-    QTimer* moveTimer;
+public slots:
+    void move();
+    //void castle_collision(Townhall* castle);
 };
 
-
 #endif // TROOP_H
+
+
