@@ -33,10 +33,10 @@ Game::Game(QWidget *parent) : QWidget(parent)
         QMessageBox::information(this, "Error", "Failed to open file: File.txt");
         return;
     }
-
+    cannonDestroyed=false;
     layout = new QGridLayout(this);
     setLayout(layout);
-    scene = new QGraphicsScene(this);
+    scene = new QGraphicsScene();
     view = new QGraphicsView(scene);
     view->setStyleSheet("background: transparent; border: 0px");
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -47,11 +47,9 @@ Game::Game(QWidget *parent) : QWidget(parent)
     if (!backgroundPixmap.isNull())
     {
         view->setBackgroundBrush(backgroundPixmap); // Set the background image as the view's background brush
-        sceneWidth = backgroundPixmap.width(); // Set the scene width equal to the background image width
-        sceneHeight = backgroundPixmap.height(); // Set the scene height equal to the background image height
     }
 
-    clanDesign.clear(); // Clear the clan design vector
+    // clanDesign.clear(); // Clear the clan design vector
 
     QTextStream in(&file);
 
@@ -77,8 +75,8 @@ Game::Game(QWidget *parent) : QWidget(parent)
 
     qDebug() << clanDesign[0][1] << "test";
 
-  //  scene->setSceneRect(0, 0, clanDesign.size() * 50, clanDesign[0].size() * 50);
-    view->resize(clanDesign.size() * 50, clanDesign[0].size() * 50);
+    scene->setSceneRect(0, 0, clanDesign[0].size() * 50, clanDesign.size() * 50);
+    view->setFixedSize(clanDesign[0].size() * 50, clanDesign.size() * 50);
 
     //----------------------------------------------//
 
@@ -193,6 +191,7 @@ void Game::formTroops()
                 {
                     Troop* troop = new Troop();
                     int randomX = QRandomGenerator::global()->bounded(scene->width());
+
                     scene->addItem(troop);
                     troop->setPos(randomX, 0);
                        m_timer->start(20);
@@ -241,8 +240,10 @@ void Game::checkCollisions(Troop* troop)
                 if (scene->items().contains(cannon)) {
                     scene->removeItem(cannon);
                     delete cannon;
+
                 }
             });
+            cannonDestroyed=true;
         }
         else if (typeid(*collidingItem) == typeid(Townhall)) {
             Townhall *townhall = dynamic_cast<Townhall*>(collidingItem);
@@ -269,8 +270,21 @@ void Game::checkCollisions(Troop* troop)
                 }
             });
         }
+        if (typeid(*collidingItem) == typeid(Bullet)) {
+            Bullet* bullet = dynamic_cast<Bullet*>(collidingItem);
+                if (scene->items().contains(bullet)) {
+                    scene->removeItem(collidingItem);
+
+                    delete bullet;
+                scene->removeItem(troop);
+                    delete troop;
+                     // disconnect(m_timer,SIGNAL(timeout()),this,SLOT (moveTroops()));
+                    scene->removeItem(bullet);
+                }
+            }
+        }
     }
-}
+
 
 
 void Game::handleStartButton()
@@ -297,7 +311,7 @@ void Game::updateTimer()
     }
     else if(townHallDestroyed==true){
         timer->stop();
-        QMessageBox::information(this, "Level 1", "Level 1 Passed");
+        QMessageBox::information(this, "Game Over", "Game Over");
     }
 
 }
@@ -322,17 +336,37 @@ Townhall* Game::findNearestTownhall(const QPointF& position)
         }
     }
     return nearestTownhall;
-}
-
-void Game::mousePressEvent(QMouseEvent *event)
+}void Game::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        Bullet *bullet = new Bullet();
-        bullet->setDirection(event->position().x(), event->position().y());
+        if (cannonDestroyed==true)
+        {
 
-        bullet->setPos(cannon->pos().x()+50, cannon->pos().y()+50);
+
+            return;
+        }
+
+        // Calculate the direction vector from the cannon to the mouse click position
+
+        // QPointF targetPos = event->pos();
+        QPoint targetPos = QCursor::pos();
+        qreal dx = targetPos.x() - cannon->pos().x();
+        qreal dy = targetPos.y() - cannon->pos().y();
+        qreal length = qSqrt(dx * dx + dy * dy);
+        qreal directionX = dx / length;
+        qreal directionY = dy / length;
+
+        qDebug() << "Direction X:" << directionX << "Direction Y:" << directionY; // Debug statement
+
+        Bullet *bullet = new Bullet(targetPos.x(), targetPos.y(), cannon->pos().x() , cannon->pos().y());
+        bullet->setDirection(directionX, directionY);
+
+        // Set the initial position of the bullet near the cannon
+        bullet->setPos(cannon->pos().x() + 50, cannon->pos().y() + 50);
 
         scene->addItem(bullet);
     }
 }
+
+

@@ -61,6 +61,7 @@ private:
     Townhall*findNearestTownhall(const QPointF& position);
     bool townHallDestroyed;
     void mousePressEvent(QMouseEvent *event);
+    bool cannonDestroyed;
 private slots:
     void handleStartButton();
     void updateTimer();

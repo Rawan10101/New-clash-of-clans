@@ -29,17 +29,17 @@ void Cannon::upgrade()
   // Set health back to max health
 }
 
-void Cannon::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton)
-    {
-        // Create a new bullet
-        Bullet *bullet = new Bullet();
-        bullet->setDirection(event->position().x(), event->position().y());
-        bullet->setPos(x(), y()); // Set the position of the bullet at the position of the cannon
-        scene()->addItem(bullet);
-    }
-}
+// void Cannon::mousePressEvent(QMouseEvent *event)
+// {
+//     if (event->button() == Qt::LeftButton)
+//     {
+//         // Create a new bullet
+//         Bullet *bullet = new Bullet();
+//         bullet->setDirection(event->position().x(), event->position().y());
+//         bullet->setPos(x(), y()); // Set the position of the bullet at the position of the cannon
+//         scene()->addItem(bullet);
+//     }
+// }
 
 
 void Cannon::cannonAttacked()
@@ -56,7 +56,7 @@ void Cannon::cannonAttacked()
         // Play sound
     }
 }
-
+/*
 void Cannon::setBulletDirection(int x, int y)
 {
     bulletDirectionX = x;
@@ -69,12 +69,13 @@ void Cannon::shootBullet()
     bullet->setPos(x() + pixmap().width() / 2, y());
     bullet->setDirection(bulletDirectionX, bulletDirectionY);
     scene()->addItem(bullet);
-
     bulletMoving = true;
     bulletFired = true;
 
     bulletTimer->start(10);
 }
+*/
+
 
 //Notes:
 //bullet movement handled in bullet class

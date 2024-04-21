@@ -23,8 +23,8 @@ public:
 private:
     Health* health;
     Bullet* bullet;
-    int bulletDirectionX;
-    int bulletDirectionY;
+    qreal bulletDirectionX;
+    qreal bulletDirectionY;
     bool bulletMoving;
     bool bulletFired;
     QTimer *bulletTimer;

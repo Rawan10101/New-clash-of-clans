@@ -18,7 +18,6 @@ SOURCES += \
     health.cpp \
     main.cpp \
     game.cpp \
-    player.cpp \
     townhall.cpp \
     troop.cpp \
     workers.cpp
@@ -32,7 +31,6 @@ HEADERS += \
     game.h \
     globalvariables.h \
     health.h \
-    player.h \
     townhall.h \
     troop.h \
     wizardtower.h \
