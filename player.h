@@ -21,7 +21,7 @@ protected:
 private:
     bool isCannonSelected;
     QGraphicsScene *scene;
-    class Cannon *cannon;
+     Cannon *cannon;
 
     void selectCannon(const QPoint &position);
     void shootCannon(const QPoint &targetPosition);

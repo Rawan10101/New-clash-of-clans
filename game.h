@@ -10,8 +10,16 @@
 #include<QLabel>
 #include<QPushButton>
 #include <QGraphicsTextItem>
+#include"cannon.h"
+#include"troop.h"
+#include "QTimer"
+#include"fence1.h"
+#include"townhall.h"
+#include "health.h"
+#include <QMouseEvent>
 class QGraphicsScene;
 class QGraphicsView;
+
 
 class Game : public QWidget
 {
@@ -27,6 +35,7 @@ public:
     void resetTimer();
 
      void formTroops();
+     QTimer* m_timer;
 private:
 
     QGridLayout *layout;
@@ -44,12 +53,21 @@ private:
     int elapsedSeconds;
     QGraphicsTextItem* timerText;
     QPushButton* startButton;
-
+    Fence1* fence;
+    Cannon* cannon;
+    Townhall* townhall;
     QPixmap scalePixmap(const QPixmap& pixmap, int width, int height);
+    Health* health;
+    Townhall*findNearestTownhall(const QPointF& position);
+    bool townHallDestroyed;
+    void mousePressEvent(QMouseEvent *event);
 private slots:
     void handleStartButton();
     void updateTimer();
 
+public slots:
+      void checkCollisions(Troop* troop);
+    void moveTroops();
 
 };
 

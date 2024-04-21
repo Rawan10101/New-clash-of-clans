@@ -13,12 +13,14 @@ Cannon::Cannon()
 {
 
    // health->setMaxHealth(10); // Set the max health of the cannon
-
-   // health->updateHealthBar();
-   QPixmap pixmap("C:/Users/HP/Desktop/file1/Cannon21G.webp");
+   QPixmap pixmap(":/images/Cannon.png");
    pixmap = pixmap.scaledToWidth(100); //adjust size later
    pixmap = pixmap.scaledToHeight(100);
     this->setPixmap(pixmap);
+   remove=false;
+}
+int Cannon::reduceHealth(){
+    return health->getHealth()-1;
 }
 
 void Cannon::upgrade()
@@ -38,6 +40,7 @@ void Cannon::mousePressEvent(QMouseEvent *event)
         scene()->addItem(bullet);
     }
 }
+
 
 void Cannon::cannonAttacked()
 {

@@ -9,7 +9,7 @@ class Workers : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 public:
-    Workers(QGraphicsItem *parent = nullptr);
+    Workers();
 
 public slots:
     void showWorker();

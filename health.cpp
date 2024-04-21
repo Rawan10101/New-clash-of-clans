@@ -1,9 +1,11 @@
 #include "health.h"
+
 using namespace std;
 Health::Health()
 {
 
     maxHealth_= 10;
+    health_=2;
 
 }
 
@@ -14,7 +16,6 @@ int Health::getHealth() const {
 int Health::getMaxHealth() const {
     return maxHealth_;
 }
-
 
 void Health::setMaxHealth(int newMaxHealth) {
     maxHealth_ = newMaxHealth;

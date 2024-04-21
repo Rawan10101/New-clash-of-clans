@@ -13,12 +13,14 @@ public:
     Bullet();
 
     void setDirection(int x, int y);
+    qreal speed;
+public slots:
     void move();
     //bool collidesWithEnemy();
 
 protected:
-    //QRectF boundingRect() const override;
-    //void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+           //QRectF boundingRect() const override;
+           //void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 private:
     int directionX;

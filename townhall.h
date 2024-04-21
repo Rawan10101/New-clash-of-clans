@@ -12,6 +12,8 @@ public:
     void upgrade();
     void townhallAttacked();
     bool getStatus();
+    int reduceHealth();
+    bool remove;
 private:
     Health* health;
     bool destroyed;

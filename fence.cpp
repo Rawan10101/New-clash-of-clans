@@ -14,7 +14,7 @@ Fence::Fence()
     //: collisionCount(0), collisionTimerCount(0), upgradeCost(20)
 {
 
-    QPixmap pixmap("C:/Users/HP/Desktop/file1/Builder_info.webp");
+    QPixmap pixmap(":/images/Wall.png");
     pixmap = pixmap.scaledToWidth(50); //adjust size later
     pixmap = pixmap.scaledToHeight(50);
    this->setPixmap(pixmap);
@@ -52,6 +52,7 @@ void Fence::setPixmap(const QPixmap& pixmap) {
      }
 */
  }
+
 
  void Fence::upgrade()
  { /*

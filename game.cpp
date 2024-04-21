@@ -3,6 +3,7 @@
 #include "fence.h"
 #include "townhall.h"
 #include "troop.h"
+#include "bullet.h"
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
@@ -22,10 +23,11 @@
 #include <QGraphicsProxyWidget>
 #include<fence1.h>
 #include<QRandomGenerator>
-
+#include<QCoreApplication>
+using namespace std;
 Game::Game(QWidget *parent) : QWidget(parent)
 {
-    QFile file("C:/Users/HP/Desktop/file1/File.txt"); // Open the file
+    QFile file(":/File.txt"); // Open the file
     if (!file.open(QFile::ReadOnly | QFile::Text))
     {
         QMessageBox::information(this, "Error", "Failed to open file: File.txt");
@@ -41,7 +43,7 @@ Game::Game(QWidget *parent) : QWidget(parent)
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     layout->addWidget(view);
 
-    QPixmap backgroundPixmap("C:/Users/HP/Desktop/file1/thumb.jpg"); // Set the background image
+    QPixmap backgroundPixmap(":/images/Background.png"); // Set the background image
     if (!backgroundPixmap.isNull())
     {
         view->setBackgroundBrush(backgroundPixmap); // Set the background image as the view's background brush
@@ -107,6 +109,16 @@ Game::Game(QWidget *parent) : QWidget(parent)
     // Create the timer
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateTimer()));
+
+    m_timer = new QTimer(this);
+    connect(m_timer,SIGNAL(timeout()),this,SLOT (moveTroops()));
+
+    m_timer->start(100);
+    Fence1* fence;
+    Cannon* cannon;
+    Townhall* townhall;
+    health=new Health();
+    townHallDestroyed=false;
 }
 
 void Game::displayClanDesign()
@@ -128,17 +140,14 @@ void Game::displayClanDesign()
             }
             else if (element == 1) // castle
             {
-              //  QPixmap pixmap("C:/Users/HP/Desktop/file1/Clan_Castle11.webp");
-               // pixmap = pixmap.scaled(10, 10);
-
-                Townhall* townhall = new Townhall();
+                townhall = new Townhall();
                 townhall->setPos(j * castleSize, i * castleSize);
                 scene->addItem(townhall);
 
             }
             else if (element == 2) // cannon
             {
-                Cannon* cannon = new Cannon();
+                 cannon = new Cannon();
                 cannon->setPos(j * cannonSize, i * cannonSize);
                 scene->addItem(cannon);
 
@@ -149,10 +158,8 @@ void Game::displayClanDesign()
             }
             else if (element == 3) // fence
             {
-              //  QPixmap pixmap("C:/Users/HP/Desktop/file1/Wall1.webp");
-               // pixmap = pixmap.scaled(50, 50);
-                qDebug()<<"Fence1";
-                Fence1* fence = new Fence1();
+              qDebug()<<"Fence1";
+               fence = new Fence1();
                  fence->setPos(j * fenceSize, i * fenceSize);
                 scene->addItem(fence);
                  qDebug()<<"Fence2";
@@ -161,47 +168,106 @@ void Game::displayClanDesign()
     }
 }
 
+
 void Game::startGame()
 {
-    // Show the start button before hiding it
     startButton->show();
     startButton->setEnabled(true);
-
-    // Hide the start button after clicking it
     startButton->hide();
-
-    // Reset the timer and show it
     resetTimer();
     timerText->show();
-
-    // Start the timer
-    timer->start(1000); // Timer interval: 1000 ms (1 second)
-
-    // Display clan design
+    timer->start(1000); //(1 second)
     displayClanDesign();
-
-    // Start forming troops
     formTroops();
 }
 void Game::formTroops()
 {
+    int count=0;
     if (gameStarted)
     {
         for (int i = 0; i < clanDesign.size(); ++i)
         {
             for (int j = 0; j < clanDesign[i].size(); ++j)
             {
-                // Check if the element at the current position is zero
-                if (clanDesign[i][j] == 0)
+                if (clanDesign[i][j] == 0 && count<=5)
                 {
-                    // Create a new troop and add it to the scene at the current position
                     Troop* troop = new Troop();
-                    scene->addItem(troop);
-                    // Set the position where enemies will appear (random)
                     int randomX = QRandomGenerator::global()->bounded(scene->width());
-                     troop->setPos(randomX, 0);
+                    scene->addItem(troop);
+                    troop->setPos(randomX, 0);
+                       m_timer->start(20);
+
+                    count++;
+
                 }
             }
+        }
+    }
+}
+void Game::moveTroops()
+{
+    QList<QGraphicsItem*> items = scene->items();
+    foreach (QGraphicsItem* item, items) {
+        Troop* troop = dynamic_cast<Troop*>(item);
+        if (troop && !troop->stopped) {
+            Townhall* nearestTownhall = findNearestTownhall(troop->pos());
+            if (nearestTownhall) {
+                QPointF direction = nearestTownhall->pos() - troop->pos();
+                direction /= QVector2D(direction).length();
+                qreal dx = direction.x() * troop->speed;
+                qreal dy = direction.y() * troop->speed;
+                troop->setPos(troop->x() + dx, troop->y() + dy);
+
+                checkCollisions(troop); //will destroy the item that will be collided with on its way to the townhall
+            }
+        }
+    }
+}
+
+void Game::checkCollisions(Troop* troop)
+{
+    QList<QGraphicsItem*> collidingItems = troop->collidingItems();
+    foreach (QGraphicsItem* collidingItem, collidingItems)
+    {
+
+        if (!scene->items().contains(collidingItem))
+            continue;
+
+        if (typeid(*collidingItem) == typeid(Cannon)) {
+            Cannon *cannon = dynamic_cast<Cannon*>(collidingItem);
+            troop->stopped = true;
+            QTimer::singleShot(5000, [=]() {
+                troop->stopped = false;
+                if (scene->items().contains(cannon)) {
+                    scene->removeItem(cannon);
+                    delete cannon;
+                }
+            });
+        }
+        else if (typeid(*collidingItem) == typeid(Townhall)) {
+            Townhall *townhall = dynamic_cast<Townhall*>(collidingItem);
+
+            troop->stopped = true;
+            QTimer::singleShot(5000, [=]() {
+                troop->stopped = false;
+                if (scene->items().contains(townhall)) {
+                    scene->removeItem(townhall);
+                    delete townhall;
+                    townHallDestroyed=true;
+                }
+            });
+        }
+        else if (typeid(*collidingItem) == typeid(Fence1)) {
+            Fence1 *fence = dynamic_cast<Fence1*>(collidingItem);
+
+            troop->stopped = true;
+            QTimer::singleShot(5000, [=]() {  // Pause troop's movement for 5 seconds
+                troop->stopped = false;
+                if (scene->items().contains(fence)) {
+                    scene->removeItem(fence);
+                    delete fence;
+                }
+            });
         }
     }
 }
@@ -211,13 +277,8 @@ void Game::handleStartButton()
 {
     if (!gameStarted)
     {
-        // Disable the start button
         startButton->setEnabled(false);
-
-        // Set gameStarted flag to true
         gameStarted = true;
-
-        // Start the game
         startGame();
     }
 }
@@ -230,20 +291,48 @@ void Game::updateTimer()
     currentTime = currentTime.addSecs(1);
     timerText->setPlainText(currentTime.toString("m:ss"));
 
-    // Check if the timer has reached 1 minute
-    if (currentTime.minute() == 1)
-    {
-        // Stop the timer
+    if (currentTime.minute() == 1 )    {
         timer->stop();
-        // Show a message box indicating that the game is over
         QMessageBox::information(this, "Game Over", "Time's up!");
-        // Start a new game
-        startGame();
     }
+    else if(townHallDestroyed==true){
+        timer->stop();
+        QMessageBox::information(this, "Level 1", "Level 1 Passed");
+    }
+
 }
 
 void Game::resetTimer()
 {
-    // Reset the timer label text to 0:00
     timerText->setPlainText("0:00");
+}
+
+Townhall* Game::findNearestTownhall(const QPointF& position)
+{
+    qreal minDistanceSquared = numeric_limits<qreal>::max();
+    Townhall* nearestTownhall = nullptr;
+    foreach (QGraphicsItem* item, scene->items()) {
+        Townhall* townhall = dynamic_cast<Townhall*>(item);
+        if (townhall) {
+            qreal distanceSquared = QPointF(townhall->x() - position.x(), townhall->y() - position.y()).manhattanLength();
+            if (distanceSquared < minDistanceSquared) {
+                minDistanceSquared = distanceSquared;
+                nearestTownhall = townhall;
+            }
+        }
+    }
+    return nearestTownhall;
+}
+
+void Game::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        Bullet *bullet = new Bullet();
+        bullet->setDirection(event->position().x(), event->position().y());
+
+        bullet->setPos(cannon->pos().x()+50, cannon->pos().y()+50);
+
+        scene->addItem(bullet);
+    }
 }

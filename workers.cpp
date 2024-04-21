@@ -6,8 +6,7 @@
 #include <QGraphicsPathItem>
 #include <QtMath>
 
-Workers::Workers(QGraphicsItem *parent)
-    : QObject(), QGraphicsPixmapItem(parent), isDestroyed(false)
+Workers::Workers(): isDestroyed(false)
 {
     QPixmap workerImage(":/images/Worker.png");
     setPixmap(workerImage.scaled(30, 30));

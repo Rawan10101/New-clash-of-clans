@@ -8,5 +8,6 @@
         <file>images/Worker.png</file>
         <file>File.txt</file>
         <file>images/Background.png</file>
+        <file>images/Barbarian1.png</file>
     </qresource>
 </RCC>
