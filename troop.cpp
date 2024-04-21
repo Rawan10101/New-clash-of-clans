@@ -1,4 +1,10 @@
 #include "troop.h"
+#include "fence.h"
+#include "townhall.h"
+#include <QRandomGenerator>
+#include <QDebug>
+#include<QTimer>
+#include "troop.h"
 #include "health.h"
 #include "townhall.h"
 #include "fence.h"
@@ -13,69 +19,68 @@
 #include <iostream>
 //#include <QDateTime>
 #include <QRandomGenerator>
-#include "workers.h"
-#include "game.h"
+#include<QObject>
+#include <QMetaObject>
 
-Troop::Troop()
-
-{
-    //enemy troop picture
-    //put picture in resource file
-
-    QPixmap picture(":/images/Barbarian1.png");
+Troop::Troop() {
+    // Load enemy troop picture
+    QPixmap picture("C:/Users/HP/Desktop/file1/Barbarian1.png");
     picture = picture.scaledToHeight(40);
     picture = picture.scaledToWidth(40);
     this->setPixmap(picture);
 
-    //the position where enemies will appear (random)
-    int random_num = rand() % 700;
-    this->setPos (random_num,0);
 
-    // 5 minute timer
-    bool timerFinished = 0;
-   // timerFinished = QDateTime::currentDateTime().5_min_timer();
+    // Create and start the 5-minute timer
+    QTimer::singleShot(5 * 60 * 1000, [=]() {
+        // Handle timer timeout (5 minutes elapsed)
+        qDebug() << "5-minute timer finished";
+    });
 
-   QObject::connect(timer5, &QTimer::timeout,[&timerFinished]()
-                         { //5 mins in milliseconds
-        timerFinished =true;
-});
-        timer5->start(5 * 60 * 1000);
-    //while statement will stop if time finished or castle is destroyed
-    timer->start(100);
-    //|| !Townhall().getStatus()
+    // Create the regular timer and connect the timeout signal to the move slot
+    m_timer = new QTimer(nullptr);
+    connect(m_timer,SIGNAL(timeout()),this,SLOT (move()));
 
-        while(!timerFinished ) // and random_number won't be inside the fence dimentions
-    {
-        connect(timer,SIGNAL(timeout()),this,SLOT (move()));
-
-    }
-
-timer5->stop();
-
-
+    m_timer->start(500); // Move the troop every 500 milliseconds
+   health= new Health();
 }
 
-void Troop:: move()
-{
-    //generating a random number
-    int num= rand() % 7;
-    // enemies move diagonally towards the middle
-    this->setPos(x()+num,y()+num);
-    QList<QGraphicsItem *> colliding_items = collidingItems();
-    for (int i = 0, n = colliding_items.size(); i < n; i++)
-    {
-        if (typeid(*(colliding_items[i])) == typeid(Fence)||typeid(*(colliding_items[i])) == typeid(Townhall))
-        {
-            //call function for when enemy collides with fence to stop moving
-            disconnect(timer,SIGNAL(timeout()),this, SLOT(move()) );
-            return;
+void Troop::move() {
+    // Generate a random number to control movement
+    int num = QRandomGenerator::global()->bounded(7);
+
+    // Move the troop diagonally towards the middle
+    this->setPos(x() + num, y() + num);
+
+    // Check for collisions with fences or townhalls
+    QList<QGraphicsItem*> colliding_items = collidingItems();
+  //  while(){
+    for (int i = 0; i < colliding_items.size(); ++i) {
+        if (typeid(*(colliding_items[i])) == typeid(Fence) || typeid(*(colliding_items[i])) == typeid(Townhall) && health->getHealth()>=0) {
+           health->decrementHealth();
+           if(health->getHealth()==0){
+               delete colliding_items[i];
+            }
         }
-        //else continue moving
+   }
     }
 
 
+const QMetaObject* Troop::metaObject() const {
+    return &static_cast<const QObject*>(this)->staticMetaObject;
 }
 
+void* Troop::qt_metacast(const char* name) {
+    if (!strcmp(name, "Troop"))
+        return static_cast<Troop*>(this);
+    return QObject::qt_metacast(name);
+}
 
-
-//set position of the scene to start displaying the enemies outside of it.
+int Troop::qt_metacall(QMetaObject::Call call, int id, void** args) {
+    if (call == QMetaObject::InvokeMetaMethod) {
+        if (id < 0)
+            return -1;
+        if (id == 0)
+            move();
+    }
+    return QObject::qt_metacall(call, id, args);
+}

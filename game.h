@@ -25,6 +25,8 @@ public:
     void adjustSceneSize();
      void startGame();
     void resetTimer();
+
+     void formTroops();
 private:
 
     QGridLayout *layout;

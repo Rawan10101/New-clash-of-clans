@@ -20,6 +20,9 @@
 #include <QTimer>
 #include <QTime>
 #include <QGraphicsProxyWidget>
+#include<fence1.h>
+#include<QRandomGenerator>
+
 Game::Game(QWidget *parent) : QWidget(parent)
 {
     QFile file("C:/Users/HP/Desktop/file1/File.txt"); // Open the file
@@ -72,7 +75,7 @@ Game::Game(QWidget *parent) : QWidget(parent)
 
     qDebug() << clanDesign[0][1] << "test";
 
-    scene->setSceneRect(0, 0, clanDesign.size() * 50, clanDesign[0].size() * 50);
+  //  scene->setSceneRect(0, 0, clanDesign.size() * 50, clanDesign[0].size() * 50);
     view->resize(clanDesign.size() * 50, clanDesign[0].size() * 50);
 
     //----------------------------------------------//
@@ -100,20 +103,19 @@ Game::Game(QWidget *parent) : QWidget(parent)
 
     gameStarted = false;
     qDebug()<<"Working";
+
     // Create the timer
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateTimer()));
-    startGame();
 }
 
 void Game::displayClanDesign()
 {
-   const int tileSize = 50; // Adjust this value according to your desired tile size
-    const int fenceSize = tileSize;
-    const int castleSize = tileSize * 2; // Double the size of the tile for the castle
-    const int cannonSize = tileSize * 2;
- qDebug()<<"Working 2";
-
+    const int tileSize = 50; // Adjust this value according to your desired tile size
+    const int fenceSize = tileSize ;
+    const int castleSize = tileSize; // Double the size of the tile for the castle
+    const int cannonSize = tileSize;
+    qDebug()<<"Working 2";
 
     for (int i = 0; i < clanDesign.size(); i++)
     {
@@ -125,30 +127,40 @@ void Game::displayClanDesign()
             {
             }
             else if (element == 1) // castle
-            {  qDebug()<<"Working 3";
-                QPixmap pixmap(":/images/Fence.png");
-                 pixmap = pixmap.scaled(10, 10);
-                Townhall* townhall = new Townhall(pixmap);
+            {
+              //  QPixmap pixmap("C:/Users/HP/Desktop/file1/Clan_Castle11.webp");
+               // pixmap = pixmap.scaled(10, 10);
+
+                Townhall* townhall = new Townhall();
                 townhall->setPos(j * castleSize, i * castleSize);
                 scene->addItem(townhall);
+
             }
             else if (element == 2) // cannon
             {
                 Cannon* cannon = new Cannon();
                 cannon->setPos(j * cannonSize, i * cannonSize);
                 scene->addItem(cannon);
+
+
+            }
+            else if (element==4){
+
             }
             else if (element == 3) // fence
             {
-                // QPixmap pixmap(":/images/Fence.png");
-                // pixmap = pixmap.scaled(10, 10);
-                // Fence* fence = new Fence(pixmap);
-                // fence->setPos(j * fenceSize, i * fenceSize);
-                // scene->addItem(fence);
+              //  QPixmap pixmap("C:/Users/HP/Desktop/file1/Wall1.webp");
+               // pixmap = pixmap.scaled(50, 50);
+                qDebug()<<"Fence1";
+                Fence1* fence = new Fence1();
+                 fence->setPos(j * fenceSize, i * fenceSize);
+                scene->addItem(fence);
+                 qDebug()<<"Fence2";
             }
         }
     }
 }
+
 void Game::startGame()
 {
     // Show the start button before hiding it
@@ -157,30 +169,43 @@ void Game::startGame()
 
     // Hide the start button after clicking it
     startButton->hide();
+
     // Reset the timer and show it
     resetTimer();
     timerText->show();
-    if(gameStarted)
-    {
-        for (int i = 0; i < clanDesign.size(); i++)
-        {  for (int j = 0; j < clanDesign[i].size(); j++)
-            {
-                int element = clanDesign[i][j]; // Get the element at the current position
 
-                if(element == 0)
+    // Start the timer
+    timer->start(1000); // Timer interval: 1000 ms (1 second)
+
+    // Display clan design
+    displayClanDesign();
+
+    // Start forming troops
+    formTroops();
+}
+void Game::formTroops()
+{
+    if (gameStarted)
+    {
+        for (int i = 0; i < clanDesign.size(); ++i)
+        {
+            for (int j = 0; j < clanDesign[i].size(); ++j)
+            {
+                // Check if the element at the current position is zero
+                if (clanDesign[i][j] == 0)
                 {
-                    for(int m = 0; m < 5; m++)
-                    {
-                        Troop* troop = new Troop();
-                        scene->addItem(troop);
-                    }
+                    // Create a new troop and add it to the scene at the current position
+                    Troop* troop = new Troop();
+                    scene->addItem(troop);
+                    // Set the position where enemies will appear (random)
+                    int randomX = QRandomGenerator::global()->bounded(scene->width());
+                     troop->setPos(randomX, 0);
                 }
             }
         }
     }
-   gameStarted = true;
-   // displayClanDesign();
 }
+
 
 void Game::handleStartButton()
 {
@@ -189,12 +214,14 @@ void Game::handleStartButton()
         // Disable the start button
         startButton->setEnabled(false);
 
-        // Start the timer
-        timer->start(1000); // Timer interval: 1000 ms (1 second)
         // Set gameStarted flag to true
         gameStarted = true;
+
+        // Start the game
+        startGame();
     }
 }
+
 
 void Game::updateTimer()
 {

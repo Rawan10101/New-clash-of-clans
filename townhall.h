@@ -8,7 +8,7 @@ class Townhall: public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 public:
-    Townhall( QPixmap pixmap);
+    Townhall( );
     void upgrade();
     void townhallAttacked();
     bool getStatus();

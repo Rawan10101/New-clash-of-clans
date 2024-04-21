@@ -8,11 +8,12 @@
 #include <health.h>
 #include <QGraphicsPixmapItem>
 #include <QObject>
-class Fence: public QGraphicsPixmapItem
+class Fence:  public QObject, public QGraphicsPixmapItem
 {
+    Q_OBJECT
 
 public:
-    Fence(QPixmap pixmap);
+    Fence();
     void setPixmap(const QPixmap& pixmap);
     void decreaseHealth();
     void upgrade();

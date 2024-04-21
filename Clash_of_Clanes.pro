@@ -14,6 +14,7 @@ SOURCES += \
     bullet.cpp \
     cannon.cpp \
     fence.cpp \
+    fence1.cpp \
     health.cpp \
     main.cpp \
     game.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     bullet.h \
     cannon.h \
     fence.h \
+    fence1.h \
     game.h \
     globalvariables.h \
     health.h \

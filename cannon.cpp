@@ -15,7 +15,7 @@ Cannon::Cannon()
    // health->setMaxHealth(10); // Set the max health of the cannon
 
    // health->updateHealthBar();
-   QPixmap pixmap(":/images/Cannon.png");
+   QPixmap pixmap("C:/Users/HP/Desktop/file1/Cannon21G.webp");
    pixmap = pixmap.scaledToWidth(100); //adjust size later
    pixmap = pixmap.scaledToHeight(100);
     this->setPixmap(pixmap);
@@ -24,7 +24,7 @@ Cannon::Cannon()
 void Cannon::upgrade()
 {
     health->setMaxHealth(health->getMaxHealth() * 1.5); // Increase max health by 1.5 every upgrade
-    health->setHealth(health->getMaxHealth()); // Set health back to max health
+  // Set health back to max health
 }
 
 void Cannon::mousePressEvent(QMouseEvent *event)

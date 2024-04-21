@@ -10,19 +10,23 @@
 #include<QGraphicsScene>
 #include <globalvariables.h>
 #include<game.h>
-Fence::Fence(QPixmap pixmap)
+Fence::Fence()
     //: collisionCount(0), collisionTimerCount(0), upgradeCost(20)
 {
 
-    setPixmap(pixmap);
+    QPixmap pixmap("C:/Users/HP/Desktop/file1/Builder_info.webp");
+    pixmap = pixmap.scaledToWidth(50); //adjust size later
+    pixmap = pixmap.scaledToHeight(50);
+   this->setPixmap(pixmap);
+
    //  health = new Health(NULL);
   // health->setMaxHealth(10); // adjust max health later
     //health->updateHealthBar();
 
    //health = new Health(NULL); //Pass the correct parameter
 
-    fenceImage.load(":/images/fence.png");
-   upgradedFenceImage.load(":/images/upgraded_fence.png");
+
+  // upgradedFenceImage.load(":/images/upgraded_fence.png");
 
    //upgradeButton = new QPushButton("Upgrade", nullptr);
    // upgradeButton->setFixedSize(80, 30);
