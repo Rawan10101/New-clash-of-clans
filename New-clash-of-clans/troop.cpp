@@ -31,8 +31,8 @@ Troop::Troop() {
         qDebug() << "5-minute timer finished";
     });
 
-    m_timer = new QTimer(nullptr); //timer to move enemy troop
-    connect(m_timer,SIGNAL(timeout()),this,SLOT (move()));
+    // m_timer = new QTimer(nullptr); //timer to move enemy troop
+    // connect(m_timer,SIGNAL(timeout()),this,SLOT (move()));
 
    // health= new Health();
 }

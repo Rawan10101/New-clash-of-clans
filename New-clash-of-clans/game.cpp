@@ -21,12 +21,15 @@
 #include <QTimer>
 #include <QTime>
 #include <QGraphicsProxyWidget>
-#include<QRandomGenerator>
-#include<QCoreApplication>
+#include <QRandomGenerator>
+#include <QCoreApplication>
 
 using namespace std;
 Game::Game(QWidget *parent) : QWidget(parent)
 {
+    int seed = QDateTime::currentMSecsSinceEpoch(); //seeding randomgenerator for troop spawning
+    randomGenerator = new QRandomGenerator(seed);
+
     QFile file(":/File.txt"); // Open the file
     if (!file.open(QFile::ReadOnly | QFile::Text))
     {
@@ -111,8 +114,11 @@ Game::Game(QWidget *parent) : QWidget(parent)
 
     m_timer = new QTimer(this);
     connect(m_timer,SIGNAL(timeout()),this,SLOT (moveTroops())); //to move troops
-
     m_timer->start(100);
+
+    spawnTimer = new QTimer();
+    connect(spawnTimer, SIGNAL(timeout()),this, SLOT (formTroops()));
+
 
     Fence1* fence;
     Cannon* cannon;
@@ -178,35 +184,27 @@ void Game::startGame()
     timer->start(1000);
 
     displayClanDesign();
+    spawnTimer->start(2000);
+    qDebug() << "spawn timer";
 
-    formTroops();
 }
 
 void Game::formTroops()
 {
-    int count=0;
+    int randomX;
+    int randomY;
 
-    if (gameStarted)
-    {
-        for (int i = 0; i < clanDesign.size(); ++i)
-        {
-            for (int j = 0; j < clanDesign[i].size(); ++j)
-            {
-                if (clanDesign[i][j] == 0 && count<=5)
-                {
-                    Troop* troop = new Troop();
-                    int randomX = QRandomGenerator::global()->bounded(scene->width());
+    do{
+        randomX = randomGenerator->bounded(0, clanDesign[0].size()-1); //generating a random X and Y within scene dimensions
+        randomY = randomGenerator->bounded(0, clanDesign.size()-1);
+         qDebug()<< randomX << " " << randomY;
+    } while (clanDesign[randomY][randomX] != 0); //keeps generating until position is a 0
 
-                    scene->addItem(troop);
-                    troop->setPos(randomX, 0);
-                       m_timer->start(20);
 
-                    count++;
-
-                }
-            }
-        }
-    }
+    Troop* troop = new Troop();
+    scene->addItem(troop);
+    troop->setPos(randomY * 50, randomX * 50);
+    m_timer->start(20);
 }
 
 void Game::moveTroops()

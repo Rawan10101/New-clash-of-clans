@@ -16,6 +16,7 @@
 #include"townhall.h"
 #include "health.h"
 #include <QMouseEvent>
+#include <QRandomGenerator>
 //class QGraphicsScene;
 //class QGraphicsView;
 
@@ -33,7 +34,7 @@ public:
     void startGame();
     void resetTimer();
 
-     void formTroops();
+
      QTimer* m_timer;
 
 private:
@@ -62,6 +63,8 @@ private:
     bool townHallDestroyed;
     void mousePressEvent(QMouseEvent *event);
     bool cannonDestroyed;
+    QRandomGenerator* randomGenerator;
+    QTimer* spawnTimer;
 
 private slots:
     void handleStartButton();
@@ -70,6 +73,7 @@ private slots:
 public slots:
     void checkCollisions(Troop* troop);
     void moveTroops();
+    void formTroops();
 
 };
 
