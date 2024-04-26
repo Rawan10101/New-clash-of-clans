@@ -12,18 +12,16 @@ class Health : public QObject
 public:
     Health();
 
-    int getHealth() const;
-    int getMaxHealth() const;
-
-public slots:
+    int getHealth();
+    int getMaxHealth();
     void setMaxHealth(int newMaxHealth);
     void decrementHealth();
     void incrementHealth();
 
 
 private:
-    int maxHealth_;
-    int health_;
+    int maxHealth;
+    int health;
 };
 
 #endif // HEALTH_H

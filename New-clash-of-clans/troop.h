@@ -15,12 +15,13 @@ public:
     bool remove;
     void stop();
     qreal speed;
+    Health* troopHealth;
+
 
 bool stopped = false;
 
 private:
     QTimer* m_timer;
-    Health* health;
 
 };
 

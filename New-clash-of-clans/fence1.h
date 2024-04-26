@@ -9,10 +9,7 @@
 #include <QPixmap>
 #include <QGraphicsPixmapItem>
 #include <QObject>
-#include"health.h"
-namespace Ui {
-class Fence1;
-}
+#include "health.h"
 
 class Fence1 : public QObject, public QGraphicsPixmapItem
 {
@@ -21,18 +18,13 @@ class Fence1 : public QObject, public QGraphicsPixmapItem
 public:
     Fence1();
     ~Fence1();
- //   void setPixmap(const QPixmap& pixmap);
-   // void decreaseHealth();
-   // void upgrade();
-   // void onUpgradeButtonClicked();
-        int reduceHealth();
     bool remove;
+    Health* fenceHealth;
 private:
     QPixmap fenceImage;
     QPixmap upgradedFenceImage;
     QPushButton* upgradeButton;
     int upgradeCost;
-        Health* health;
 };
 
 #endif // FENCE1_H

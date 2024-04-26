@@ -23,13 +23,15 @@
 #include <QGraphicsProxyWidget>
 #include <QRandomGenerator>
 #include <QCoreApplication>
-
+#include <QtNumeric>
 using namespace std;
+
 Game::Game(QWidget *parent) : QWidget(parent)
 {
     int seed = QDateTime::currentMSecsSinceEpoch(); //seeding randomgenerator for troop spawning
     randomGenerator = new QRandomGenerator(seed);
 
+    ////LAYOUT////
     QFile file(":/File.txt"); // Open the file
     if (!file.open(QFile::ReadOnly | QFile::Text))
     {
@@ -37,7 +39,7 @@ Game::Game(QWidget *parent) : QWidget(parent)
         return;
     }
 
-    cannonDestroyed=false;
+    //cannonDestroyed=false;
     layout = new QGridLayout(this);
     setLayout(layout);
 
@@ -85,7 +87,7 @@ Game::Game(QWidget *parent) : QWidget(parent)
 
     //----------------------------------------------//
 
-    //timer label
+    ////TIMER LABEL////
     timerRect = QRectF(10, 10, 100, 40); // Position and size of the timer rectangle
     timerText = new QGraphicsTextItem();
     timerText->setPos(timerRect.topLeft());
@@ -96,7 +98,9 @@ Game::Game(QWidget *parent) : QWidget(parent)
     timerText->setPos(0,0);
     scene->addItem(timerText);
 
-    //start button
+    //----------------------------------------------//
+
+    ////START BUTTON////
     startButton = new QPushButton("Start", this);
     startButton->setStyleSheet("font-size: 20px;");
     startButton->move(100,100);
@@ -123,7 +127,7 @@ Game::Game(QWidget *parent) : QWidget(parent)
     Fence1* fence;
     Cannon* cannon;
     Townhall* townhall;
-    health=new Health();
+    health= new Health();
     townHallDestroyed=false;
 }
 
@@ -184,7 +188,7 @@ void Game::startGame()
     timer->start(1000);
 
     displayClanDesign();
-    spawnTimer->start(2000);
+    spawnTimer->start(4000);
     qDebug() << "spawn timer";
 
 }
@@ -236,44 +240,84 @@ void Game::checkCollisions(Troop* troop)
         if (!scene->items().contains(collidingItem))
             continue;
 
+        //redirect troop if cannon is in their way
         if (typeid(*collidingItem) == typeid(Cannon)) {
-            Cannon *cannon = dynamic_cast<Cannon*>(collidingItem);
-            troop->stopped = true;
-            QTimer::singleShot(5000, [=]() {
-                troop->stopped = false;
-                if (scene->items().contains(cannon)) {
-                    scene->removeItem(cannon);
-                    delete cannon;
-
-                }
-            });
-            cannonDestroyed=true;
+            if (troop->x() <= collidingItem->x() + 50 )
+                troop->setPos(troop->x()-10, troop->y());
+            else
+                troop->setPos(troop->x()+10, troop->y()-10);
         }
+
         else if (typeid(*collidingItem) == typeid(Townhall)) {
             Townhall *townhall = dynamic_cast<Townhall*>(collidingItem);
 
-            troop->stopped = true;
-            QTimer::singleShot(5000, [=]() {
-                troop->stopped = false;
-                if (scene->items().contains(townhall)) {
-                    scene->removeItem(townhall);
-                    delete townhall;
-                    townHallDestroyed=true;
-                }
-            });
+            qDebug()<<"townhall collision";
+
+            qreal dx = troop->x() - collidingItem->x();
+            qreal dy = troop->y() - collidingItem->y();
+
+            if (qAbs(dx) > qAbs(dy))//move left or right
+            {
+                if (dx < 0) //move left
+                    troop->setPos(townhall->x()-80, townhall->y());
+                else //move right
+                    troop->setPos(townhall->x()+80, townhall->y());
+            }
+            else //move up or down
+            {
+                if (dy < 0) //move up
+                    troop->setPos(townhall->x(), townhall->y()-80);
+                else //move down
+                    troop->setPos(townhall->x(), townhall->y()+80);
+            }
+
+            townhall->townhallHealth->decrementHealth();
+            qDebug()<< townhall->townhallHealth->getHealth();
+            if (townhall->townhallHealth->getHealth() <= 0)
+            {
+                scene->removeItem(townhall);
+                delete townhall;
+                townHallDestroyed = true;
+
+            }
+
         }
+
+
         else if (typeid(*collidingItem) == typeid(Fence1)) {
             Fence1 *fence = dynamic_cast<Fence1*>(collidingItem);
 
-            troop->stopped = true;
-            QTimer::singleShot(5000, [=]() {
-                troop->stopped = false;
-                if (scene->items().contains(fence)) {
-                    scene->removeItem(fence);
-                    delete fence;
-                }
-            });
+            qDebug()<<"fence collision";
+
+            qreal dx = troop->x() - collidingItem->x();
+            qreal dy = troop->y() - collidingItem->y();
+
+            if (qAbs(dx) >= qAbs(dy))//move left or right
+            {
+                if (dx <= 0) //move left
+                    troop->setPos(fence->x()-50, troop->y());
+                else //move right
+                    troop->setPos(fence->x()+50, troop->y());
+            }
+            else //move up or down
+            {
+                if (dy <= 0) //move up
+                    troop->setPos(troop->x(), fence->y()-50);
+                else //move down
+                    troop->setPos(troop->x(), fence->y()+50);
+            }
+
+            fence->fenceHealth->decrementHealth();
+            qDebug()<< fence->fenceHealth->getHealth();
+            if (fence->fenceHealth->getHealth() <= 0)
+            {
+                scene->removeItem(fence);
+                delete fence;
+
+            }
+
         }
+
         if (typeid(*collidingItem) == typeid(Bullet)) {
             Bullet* bullet = dynamic_cast<Bullet*>(collidingItem);
                 if (scene->items().contains(bullet)) {
@@ -288,7 +332,6 @@ void Game::checkCollisions(Troop* troop)
             }
         }
     }
-
 
 
 void Game::handleStartButton()
@@ -311,10 +354,14 @@ void Game::updateTimer()
 
     if (currentTime.minute() == 1 )    {
         timer->stop();
+        m_timer->stop();
+        spawnTimer->stop();
         QMessageBox::information(this, "Player wins!", "Level completed succesfully!");
     }
     else if(townHallDestroyed==true){
         timer->stop();
+        m_timer->stop();
+        spawnTimer->stop();
         QMessageBox::information(this, "Game Over", "Game Over");
     }
 
@@ -341,7 +388,9 @@ Townhall* Game::findNearestTownhall(const QPointF& position)
     }
     return nearestTownhall;
 
-}void Game::mousePressEvent(QMouseEvent *event) //release bullet when player clicks left
+}
+
+void Game::mousePressEvent(QMouseEvent *event) //release bullet when player clicks left
 {
     if (event->button() == Qt::LeftButton)
     {

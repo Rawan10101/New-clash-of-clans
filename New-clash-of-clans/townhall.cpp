@@ -2,7 +2,7 @@
 #include <QDebug>
 Townhall::Townhall( )
 {
-    health = new Health();
+    townhallHealth = new Health();
     //health->setMaxHealth(10);
     QPixmap pixmap(":/images/Castle.png");
     pixmap = pixmap.scaledToWidth(50);

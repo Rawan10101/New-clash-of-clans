@@ -3,29 +3,27 @@
 using namespace std;
 Health::Health()
 {
-
-    maxHealth_= 10;
-    health_=2;
-
+    maxHealth = 10;
+    health = maxHealth;
 }
 
-int Health::getHealth() const {
-    return health_;
+int Health::getHealth() {
+    return health;
 }
 
-int Health::getMaxHealth() const {
-    return maxHealth_;
+int Health::getMaxHealth() {
+    return maxHealth;
 }
 
 void Health::setMaxHealth(int newMaxHealth) {
-    maxHealth_ = newMaxHealth;
+    maxHealth = newMaxHealth;
 
 }
 
 void Health::decrementHealth() {
-    health_--;
+    health--;
 }
 
 void Health::incrementHealth() {
-    health_++;
+    health++;
 }

@@ -15,8 +15,9 @@ public:
     //bool getStatus();
     //int reduceHealth();
     bool remove;
+    Health* townhallHealth;
+
 private:
-    Health* health;
     //bool destroyed;
 };
 
