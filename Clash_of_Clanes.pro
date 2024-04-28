@@ -10,10 +10,8 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    archtower.cpp \
     bullet.cpp \
     cannon.cpp \
-    fence.cpp \
     fence1.cpp \
     health.cpp \
     main.cpp \
@@ -23,10 +21,8 @@ SOURCES += \
     workers.cpp
 
 HEADERS += \
-    archtower.h \
     bullet.h \
     cannon.h \
-    fence.h \
     fence1.h \
     game.h \
     globalvariables.h \

@@ -19,10 +19,14 @@ Fence1::Fence1()
     this->setPixmap(pixmap);
     remove=false;
 }
-int Fence1::reduceHealth(){
-    return health->getHealth()-1;
+void Fence1::reduceHealth(){
+   health->getHealth()-1;
+}
+
+int Fence1::getHealth(){
+    return health->getHealth();
 }
 Fence1::~Fence1()
 {
-   // delete ui;
+
 }

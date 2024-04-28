@@ -1,3 +1,4 @@
+
 #include "bullet.h"
 #include "troop.h"
 #include <QGraphicsScene>
@@ -8,30 +9,29 @@
 
 Bullet::Bullet(qreal mouseX, qreal mouseY, qreal cannonX, qreal cannonY)
 {
-    this -> mouseX = mouseX;
-    this -> mouseY = mouseY;
-    this -> cannonX = cannonX;
-    this -> cannonY = cannonY;
+    this->mouseX = mouseX;
+    this->mouseY = mouseY;
+    this->cannonX = cannonX;
+    this->cannonY = cannonY;
+
     QPixmap pixmap1(":/images/cannonball.png");
-    pixmap1 = pixmap1.scaledToWidth(30); // Adjust size later
-    pixmap1 = pixmap1.scaledToHeight(30);
+    pixmap1 = pixmap1.scaledToWidth(20);
+    pixmap1 = pixmap1.scaledToHeight(20);
     setPixmap(pixmap1);
-    speed = 5; // Adjust the speed as needed
+    speed = 5;
 
     QTimer *timer = new QTimer();
-    connect(timer, SIGNAL(timeout()), this, SLOT(move()));
-    timer->start(30); // Adjust the timer interval as needed
+    connect(timer, SIGNAL(timeout()), this, SLOT(move())); //timer to move bullet
+    timer->start(30);
 
     qDebug() << "Inside constructor";
 }
 
 void Bullet::setDirection(qreal x, qreal y)
 {
-    // Calculate the direction vector from the current bullet position to the target position
     qreal dx = x - this->x();
     qreal dy = y - this->y();
 
-    // Normalize the direction vector to ensure constant speed
     qreal length = qSqrt(dx * dx + dy * dy);
     directionX = dx / length;
     directionY = dy / length;
@@ -44,18 +44,16 @@ void Bullet::move()
     qreal length = qSqrt(dx * dx + dy * dy);
     qreal x_inc = dx / length;
     qreal y_inc = dy / length;
-    // Move the bullet along its direction vector
-    //qreal dx = directionX * speed;
-    //qreal dy = directionY * speed;
-    // qDebug() << dx; // Debug statement
-    // qDebug() << dy; // Debug statement
+
+    // qDebug() << dx;
+    // qDebug() << dy;
 
     setPos(x() + x_inc*speed, y() + y_inc*speed);
 
-    // Remove the bullet when it goes out of bounds
-    if (y() < 0 || y() > scene()->height() || x() < 0 || x() > scene()->width())
+    if (y() < 0 || y() > scene()->height() || x() < 0 || x() > scene()->width()) //to remove bullet
     {
         scene()->removeItem(this);
         delete this;
     }
 }
+

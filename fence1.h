@@ -21,11 +21,8 @@ class Fence1 : public QObject, public QGraphicsPixmapItem
 public:
     Fence1();
     ~Fence1();
- //   void setPixmap(const QPixmap& pixmap);
-   // void decreaseHealth();
-   // void upgrade();
-   // void onUpgradeButtonClicked();
-        int reduceHealth();
+        void reduceHealth();
+    int getHealth();
     bool remove;
 private:
     QPixmap fenceImage;

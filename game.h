@@ -30,16 +30,23 @@ public:
 
   //  void printClanDesign();
     void displayClanDesign();
+    void displayClanDesign2();
     void adjustSceneSize();
      void startGame();
     void resetTimer();
 
-     void formTroops();
+     void formTroopsLevel1();
+     void formTroopsLevel2();
      QTimer* m_timer;
+     QTimer* spawnTimer;
+     void handleSoundSettingsButton();
+     void handleShopButton();
 private:
-
+     bool level1, level2, level3, level4, level5;
+    int currentMoney;
     QGridLayout *layout;
     QVector<QVector<int>> clanDesign;
+     QVector<QVector<int>> clanDesign2;
    QGraphicsView* view;
    QGraphicsScene* scene;
     int cellSize;

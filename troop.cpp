@@ -37,15 +37,13 @@ Troop::Troop() {
         qDebug() << "5-minute timer finished";
     });
 
-    // Create the regular timer and connect the timeout signal to the move slot
+
     m_timer = new QTimer(nullptr);
     connect(m_timer,SIGNAL(timeout()),this,SLOT (move()));
 
-    // Move the troop every 500 milliseconds
    health= new Health();
 }
 void Troop::stop() {
-    // Set a flag to indicate that the troop should stop moving
     stopped = true;
 }
 

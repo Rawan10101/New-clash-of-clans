@@ -18,7 +18,8 @@ public:
     void cannonAttacked(); //for handling collision with enemy
     void setBulletDirection(int x, int y);
     void shootBullet();
-    int reduceHealth();
+    void reduceHealth();
+    int getHealth();
     bool remove;
 private:
     Health* health;

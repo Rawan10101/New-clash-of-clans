@@ -2,21 +2,23 @@
 #include <QDebug>
 Townhall::Townhall( )
 {
-    health = new Health();
-    //health->setMaxHealth(10); //adjust max health later
-    // pixmap is sent from game.cpp
+    townhallHealth = new Health();
+    //health->setMaxHealth(10);
     QPixmap pixmap(":/images/Castle.png");
-    pixmap = pixmap.scaledToWidth(50); //adjust size later
+    pixmap = pixmap.scaledToWidth(50);
     pixmap = pixmap.scaledToHeight(50);
     this->setPixmap(pixmap);
     qDebug() << "testing townhall";
     //health->updateHealthBar();
     remove=false;
-    destroyed = 0; //bool variable to indicate if townhall got destroyed
+    //destroyed = 0; //bool variable to indicate if townhall got destroyed
 }
 
-int Townhall::reduceHealth(){
-    return (health->getHealth())-1;
+void Townhall::reduceHealth(){
+  (health->getHealth())-1;
+}
+int Townhall::getHealth(){
+    return health->getHealth();
 }
 void Townhall::upgrade() //function is called when user chooses to upgrade and they have enough money
 {
